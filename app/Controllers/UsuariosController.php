@@ -7,7 +7,7 @@ class UsuariosController
 
     public function __construct()
     {
-        require_once __DIR__ . '/../config/Database.php';
+        require_once __DIR__ . '/../../config/database.php';
         $this->pdo = $pdo;
     }
 
@@ -22,7 +22,7 @@ class UsuariosController
         echo json_encode($usuarios, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
 
-    public function findById(): void
+    public function buscarPorId(): void
     {
         header('content-type: application/json; charset=utf-8');
 
@@ -110,7 +110,7 @@ class UsuariosController
     {
         header('content-type: application/json; charset=utf-8');
 
-        $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+        $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
         $nome = trim($_POST['nome'] ?? '');
         $email = trim($_POST['email'] ?? '');
         $senha = $_POST['senha'] ?? '';
@@ -129,11 +129,11 @@ class UsuariosController
             return;
         }
 
-        if (!in_array($perfil, ['admin', 'atendente', 'aluno'], true)) {
+        if (!in_array($perfil, ['admin', 'aluno', 'atendente'], true)) {
             http_response_code(400);
-            echo json_encode(['error' => 'Perfil inválido']);
+            echo json_encode(['erro' => 'Perfil inválido.']);
             return;
-        }
+           }
 
         if (!in_array($status, ['ativo', 'inativo'])) {
             http_response_code(400);
@@ -163,7 +163,7 @@ class UsuariosController
         }
     }
 
-    public function delete(): void
+    public function excluir(): void
     {
         header('Content-type: application/json; charset=utf-8');
 
