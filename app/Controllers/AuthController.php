@@ -67,16 +67,16 @@ class AuthController
 
         $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if {
+        if (
             !$usuario
             || $usuario['status'] !== 'ativo'
             || !password_verify($senha, $usuario['senha'])
-        } {
+         ){
             $_SESSION['erro_login'] = 'E-mail ou senha inválidos.';
 
             header('Location: ?controller=auth&action=login');
             exit;
-        }
+         }
 
         session_regenerate_id(true);
 
@@ -97,7 +97,7 @@ class AuthController
 
         $usuario = usuarioAtual();
 
-        require __DIR__ . '/../Views/dashboard/index.php'
+        require __DIR__ . '/../Views/dashboard/index.php';
     }
 
     public function logout(): void 

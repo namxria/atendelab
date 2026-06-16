@@ -1,39 +1,60 @@
 <?php
-
+require_once __DIR__ . '/app/Controllers/AuthController.php';
 require_once __DIR__ . '/app/Controllers/UsuariosController.php';
+require_once __DIR__ . '/app/Middleware/auth.php';
 
-$controller = $_GET['controller'] ?? 'home';
-$action = $_GET['action'] ?? 'index';
+$controller = $_GET['controller'] ?? 'auth';
+$action = $_GET['action'] ?? 'login';
 
-if($controller === 'usuarios'){
-    $usuariosController = new UsuariosController();
+switch ($controller) {
+    case 'auth':
+        $authController = new AuthController();
 
-    switch ($action) {
-        case 'listar':
-            $usuariosController->listar();
-            break;
-
-        case 'buscar':
-            $usuariosController->buscarPorId();
-            break;
-
-        case 'criar':
-            $usuariosController->criar();
-            break;
-        
-        case 'atualizar':
-            $usuariosController->atualizar();
-            break;
-
-        case 'excluir':
-            $usuariosController->excluir();
-            break;
-
-        default:
-            echo 'Ação de usuários não encontrada.';
-            break;
-    }
-} else {
-    echo '<h1>AtendeLab</h1>';
-    echo '<p>Projeto em execução. Use ?controller=usuarios&action=listar para testar.</p>';
+        switch ($action) {
+            case "login":
+                $authController->exibirLogin();
+                break;
+            case "logout":
+                $authController->logout();
+                break;
+            case "entrar":
+                $authController->entrar();
+                break;
+            case "dashboard":
+                $authController->dashboard();
+                break;
+            default:
+                http_response_code(404);
+                echo "<h1>Rota não teste</h1>";
+                break;
+        }
+        break;
+    case 'usuarios':
+        $UsuariosController = new UsuariosController();
+        switch ($action) {
+            case "listar":
+                $UsuariosController->listar();
+                break;
+            case "buscar":
+                $UsuariosController->findById();
+                break;
+            case "criar":
+                $UsuariosController->criar();
+                break;
+            case "atualizar":
+                $UsuariosController->atualizar();
+                break;
+            case "excluir":
+                $UsuariosController->delete();
+                break;
+            default:
+                http_response_code(404);
+                echo "<h1>Rota não teste</h1>";
+                break;
+        }
+        break;
+    default:
+        http_response_code(404);
+        echo "<h1>Rota não test</h1>";
+        break;
 }
