@@ -1,60 +1,77 @@
 <?php
+
+require_once __DIR__ . '/app/Middleware/auth.php';
 require_once __DIR__ . '/app/Controllers/AuthController.php';
 require_once __DIR__ . '/app/Controllers/UsuariosController.php';
-require_once __DIR__ . '/app/Middleware/auth.php';
+require_once __DIR__ . '/app/Controllers/PessoasController.php';
+require_once __DIR__ . '/app/Controllers/TiposAtendimentosController.php';
+require_once __DIR__ . '/app/Controllers/AtendimentosController.php';
+require_once __DIR__ . '/app/Controllers/FrontendController.php';
 
 $controller = $_GET['controller'] ?? 'auth';
-$action = $_GET['action'] ?? 'login';
+$action     = $_GET['action']     ?? 'login';
+
+if ($controller === 'auth') {
+    $auth = new AuthController();
+
+    switch ($action) {
+        case 'login':
+            $auth->exibirLogin();
+            break;
+
+        case 'entrar':
+            $auth->entrar();
+            break;
+
+        case 'dashboard':
+            exigirAutenticacao();
+            $auth->dashboard();
+            break;
+
+        case 'logout':
+            $auth->logout();
+            break;
+
+        default:
+            http_response_code(404);
+            echo 'Ação de autenticação não encontrada.';
+    }
+
+    exit;
+}
+
+exigirAutenticacao();
 
 switch ($controller) {
-    case 'auth':
-        $authController = new AuthController();
 
-        switch ($action) {
-            case "login":
-                $authController->exibirLogin();
-                break;
-            case "logout":
-                $authController->logout();
-                break;
-            case "entrar":
-                $authController->entrar();
-                break;
-            case "dashboard":
-                $authController->dashboard();
-                break;
-            default:
-                http_response_code(404);
-                echo "<h1>Rota não teste</h1>";
-                break;
-        }
-        break;
     case 'usuarios':
-        $UsuariosController = new UsuariosController();
-        switch ($action) {
-            case "listar":
-                $UsuariosController->listar();
-                break;
-            case "buscar":
-                $UsuariosController->findById();
-                break;
-            case "criar":
-                $UsuariosController->criar();
-                break;
-            case "atualizar":
-                $UsuariosController->atualizar();
-                break;
-            case "excluir":
-                $UsuariosController->delete();
-                break;
-            default:
-                http_response_code(404);
-                echo "<h1>Rota não teste</h1>";
-                break;
-        }
+        $obj = new UsuariosController();
         break;
+
+    case 'pessoas':
+        $obj = new PessoasController();
+        break;
+
+    case 'tipos':
+        $obj = new TiposAtendimentosController();
+        break;
+
+    case 'atendimentos':
+        $obj = new AtendimentosController();
+        break;
+
+    case 'frontend':
+        $obj = new FrontendController();
+        break;
+
     default:
         http_response_code(404);
-        echo "<h1>Rota não test</h1>";
-        break;
+        exit('Controller não encontrado.');
 }
+
+if (!method_exists($obj, $action)) {
+    http_response_code(404);
+    exit('Ação não encontrada.');
+}
+
+$obj->$action();

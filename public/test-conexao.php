@@ -1,5 +1,6 @@
 <?php
 
+
 $host = "localhost";
 $banco = "atendelab";
 $port = "3307";
